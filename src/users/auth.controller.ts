@@ -28,6 +28,7 @@ export class AuthController {
   @Res() res: Response, @Next() next: NextFunction) {
     try {
       const user = await this.authService.validateUser(userEmail.toLowerCase(), userPassword);
+      console.log({user2:user})
       if (!user) {
         throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
       }

@@ -32,11 +32,16 @@ export class AuthService {
   }
 
   async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.userModel.findOne({email});
-    if (user && await this.isValidPassword(password,email)) {
-      return user;
+    try{
+      const user = await this.userModel.findOne({email});
+      if (user && await this.isValidPassword(password,email)) {
+        const { password , ...rest } = user
+        return user;
+      }
+      return null;
+    }catch(e){
+      return e
     }
-    return null;
   }
 
   async createToken(user: any) {

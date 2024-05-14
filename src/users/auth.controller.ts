@@ -1,6 +1,7 @@
-import { Body, Controller, Post, Get, Query, HttpStatus, HttpException, Next, Req, Res} from "@nestjs/common";
+import { Body, Controller, Post, Get, Query, HttpStatus, HttpException, Next, Req, Res, UseGuards, Request} from "@nestjs/common";
 import { Response,NextFunction } from 'express';
 import { AuthService } from "./auth.service";
+import { LocalAuthGuard } from "./local-auth-guard";
 
 
 @Controller("users")
@@ -21,28 +22,34 @@ export class AuthController {
     return data;
   }
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(
-  @Body("email") userEmail: string,
-  @Body("password") userPassword: string, 
-  @Res() res: Response, @Next() next: NextFunction) {
-    try {
-      const user = await this.authService.validateUser(userEmail.toLowerCase(), userPassword);
-      if (!user) {
-        throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
-      }
-
-      const token = await this.authService.createToken(user);
-      res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
-      res.status(HttpStatus.OK).json({
-        status: 'success',
-        user,
-        token,
-      });
-    } catch (error) {
-      next(new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR));
-    }
+  login(@Request() req, ): any {
+    return req.user;
   }
+
+  // @Post('login')
+  // async login(
+  // @Body("email") userEmail: string,
+  // @Body("password") userPassword: string, 
+  // @Res() res: Response, @Next() next: NextFunction) {
+  //   try {
+  //     const user = await this.authService.validateUser(userEmail.toLowerCase(), userPassword);
+  //     if (!user) {
+  //       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+  //     }
+
+  //     const token = await this.authService.createToken(user);
+  //     res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
+  //     res.status(HttpStatus.OK).json({
+  //       status: 'success',
+  //       user,
+  //       token,
+  //     });
+  //   } catch (error) {
+  //     next(new HttpException(`Internal Server Error: ${error}`, HttpStatus.INTERNAL_SERVER_ERROR));
+  //   }
+  // }
 
    // @Get()
   // getUsers(@Query("userId") userId: string) {

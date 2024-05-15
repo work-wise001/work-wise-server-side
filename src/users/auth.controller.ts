@@ -2,6 +2,8 @@ import { Body, Controller, Post, Get, Query, HttpStatus, HttpException, Next, Re
 import { Response,NextFunction } from 'express';
 import { AuthService } from "./auth.service";
 import { LocalAuthGuard } from "./local-auth-guard";
+import { JwtAuthGuard } from "./jwt-auth-guard";
+import { AuthGuard } from '@nestjs/passport';
 
 
 @Controller("users")
@@ -28,6 +30,24 @@ export class AuthController {
     return req.user;
   }
 
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth(@Req() req) {
+    // Initiates the Google OAuth2 login flow
+  }
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  async googleAuthRedirect(@Req() req, @Res() res) {
+    // Handles the Google OAuth2 callback
+    const jwt: string = await this.authService.createToken(req.user);
+    console.log(req.user)
+    // Now you could redirect the user to the frontend with the token
+    res.redirect(`https://dynamic-unicorn-bea0db.netlify.app/?jwt=${jwt}`);
+  }
+
+
+
   // @Post('login')
   // async login(
   // @Body("email") userEmail: string,
@@ -51,11 +71,12 @@ export class AuthController {
   //   }
   // }
 
-   // @Get()
-  // getUsers(@Query("userId") userId: string) {
-  //   const data = this.authService.getUsers(userId);
-  //   return data;
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  getUsers(@Query("userId") userId: string) {
+    const data = this.authService.getUsers(userId);
+    return data;
+  }
 
 //   @Patch()
 //   updateProduct(

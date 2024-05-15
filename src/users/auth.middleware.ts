@@ -21,7 +21,7 @@ export class AuthMiddleware implements NestMiddleware {
         });
       });
 
-      (req as any)= {
+      (req as any) = {
         userId: payload.user.userId,
         firstName: payload.user.firstName,
         email: payload.user.email,

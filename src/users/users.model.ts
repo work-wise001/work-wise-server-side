@@ -1,9 +1,9 @@
 import * as mongoose from 'mongoose';
 
 export const userSchema = new mongoose.Schema({
-  fullName: {type: String, required: true},
+  fullName: {type: String},
   email: {type: String, required: true},
-  password: {type: String, required: true},
+  password: {type: String},
   userId: {type: String, required: true},
   image: { url: String, format: String, public_id: String }
 })

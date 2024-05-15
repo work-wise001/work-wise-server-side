@@ -31,12 +31,23 @@ export class AuthService {
     return data;
   }
 
+  async findOrCreateUser(profile: any) {
+    let user = await this.userModel.findOne({ userId: profile.googleId });
+
+    if (!user) {
+      user = await new this.userModel(profile).save(); // Create user if they don't exist
+    }
+
+    return user; // Return user whether it existed or was just created
+  }
+
   async validateUser(email: string, password: string): Promise<any> {
     try{
       const user = await this.userModel.findOne({email});
+      const token = await this.createToken(user);
       if (user && await this.isValidPassword(password,email)) {
         const { password , ...rest } = user
-        return user;
+        return { user, token };
       }
       return null;
     }catch(e){
@@ -45,10 +56,10 @@ export class AuthService {
   }
 
   async createToken(user: any) {
-    const payload = { user };
+    //const payload = { user };
     const User = await this.userModel.findOne({email: user.email});
 
-    const token = await this.jwtService.sign({fullname:User.fullName, email:User.email})
+    const token = await this.jwtService.sign({email:User.email})
     if (! token) {
       return "No JWT Token Attached"
     }

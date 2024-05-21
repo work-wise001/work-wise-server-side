@@ -5,7 +5,18 @@ export const userSchema = new mongoose.Schema({
   email: {type: String, required: true},
   password: {type: String},
   userId: {type: String, required: true},
+  verified: {type: Boolean, default: false },
+  authStrategy: {type: String, default: "local"},
   image: { url: String, format: String, public_id: String }
+},
+{
+  toJSON: {
+    transform(doc, ret) {
+      delete ret.__v;
+      delete ret._id;
+    },
+  },
+  timestamps: true,
 })
 export interface User extends mongoose.Document {
   id: string;
@@ -13,4 +24,5 @@ export interface User extends mongoose.Document {
   email: string;
   password: string;
   userId: string;
+
 }

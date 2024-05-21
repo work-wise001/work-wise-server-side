@@ -21,16 +21,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       userId: profile.id,
       email: profile.emails[0].value,
       fullName: profile.displayName,
-      //lastName: profile.names[0].familyName,
-      // Other user information you might want to save
+      authStrategy: "google"
     })
-    // const user = {
-    //   email: emails[0].value,
-    //   firstName: name.givenName,
-    //   lastName: name.familyName,
-    //   picture: photos[0].value,
-    //   accessToken
-    // }
+
 
     done(null, user);
   }

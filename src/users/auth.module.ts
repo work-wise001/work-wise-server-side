@@ -9,7 +9,8 @@ import { userSchema } from "./users.model";
 import { PassportModule } from '@nestjs/passport';
 import { GoogleStrategy } from './google.strategy';
 import { LocalStrategy } from './local.strategy';
-import { JwtStrategy } from "./jwt.strategy"
+import { JwtStrategy } from "./jwt.strategy";
+import { MailService } from '../utils/mail.service';
 
 @Module({
     imports: [JwtModule.registerAsync({       
@@ -26,6 +27,7 @@ import { JwtStrategy } from "./jwt.strategy"
     ],
     controllers: [AuthController],
     providers: [AuthService, 
+      MailService,
       GoogleStrategy, 
       LocalStrategy,
       JwtStrategy

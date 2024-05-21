@@ -5,6 +5,7 @@ import { User } from "./users.model";
 import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { MailService } from '../utils/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +14,7 @@ export class AuthService {
   constructor(
     @InjectModel("User") private readonly userModel: Model<User>,
     //private readonly usersService: UsersService,
+    private readonly mailService: MailService,
     private readonly jwtService: JwtService
   ) {}
 
@@ -21,18 +23,22 @@ export class AuthService {
     email = email.toLowerCase();
     const hashedPassword = await bcrypt.hash(password, 10)
     password = hashedPassword;
-    //const JWT_SECRET = process.env.JWT_SECRET;
-    // const token = await jwt.sign(
-    //   { fullName: user.fullName, email: user.email, _id: user._id },
-    //   JWT_SECRET
-    // );
-    const newUser = new this.userModel({ userId, fullName, email, password });
-    const data = await newUser.save();
-    return data;
+    const user = await this.userModel.findOne({email: email})
+    if (user) {
+      return "User Already Registered"
+    } else {
+      await this.mailService.sendMail(email, "Verify Your Email", "userId", userId )
+      const newUser = new this.userModel({ userId, fullName, email, password });
+      const data = await newUser.save();
+      return data;
+    }
+
+
+   
   }
 
   async findOrCreateUser(profile: any) {
-    let user = await this.userModel.findOne({ userId: profile.googleId });
+    let user = await this.userModel.findOne({ userId: profile.userId });
 
     if (!user) {
       user = await new this.userModel(profile).save(); // Create user if they don't exist

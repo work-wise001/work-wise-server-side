@@ -11,6 +11,7 @@ import { GoogleStrategy } from './google.strategy';
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from "./jwt.strategy";
 import { MailService } from '../utils/mail.service';
+import { GenerateOTP } from "src/utils/generate.otp";
 
 @Module({
     imports: [JwtModule.registerAsync({       
@@ -28,6 +29,7 @@ import { MailService } from '../utils/mail.service';
     controllers: [AuthController],
     providers: [AuthService, 
       MailService,
+      GenerateOTP,
       GoogleStrategy, 
       LocalStrategy,
       JwtStrategy

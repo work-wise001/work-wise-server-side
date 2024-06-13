@@ -22,11 +22,12 @@ export class MailService {
 
   async sendMail(to: string, subject: string, text: string, html: string): Promise<void> {
     // setup email data with unicode symbols
+    const textBody = text;
     const mailOptions = {
       from: 'Work-Wise', // sender address
       to: to, // list of receivers
       subject: subject, // Subject line
-      text: text, // plain text body
+      text: textBody, // plain text body
       html: html, // html body
     };
 

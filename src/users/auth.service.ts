@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from '../utils/mail.service';
+import { GenerateOTP } from "src/utils/generate.otp";
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,7 @@ export class AuthService {
   constructor(
     @InjectModel("User") private readonly userModel: Model<User>,
     //private readonly usersService: UsersService,
+    private readonly generateOtp: GenerateOTP,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService
   ) {}
@@ -23,14 +25,22 @@ export class AuthService {
     email = email.toLowerCase();
     const hashedPassword = await bcrypt.hash(password, 10)
     password = hashedPassword;
+    const otpCode = `${this.generateOtp.OTP(6)}`
+    // const newUser = { email, fullName, userId };
+    // console.log({newUser})
+    const token = await this.jwtService.sign({email, fullName, userId})
+    if (! token) {
+      return "No JWT Token Attached"
+    }
+    console.log({otpCode})
     const user = await this.userModel.findOne({email: email})
     if (user) {
       return "User Already Registered"
     } else {
-      await this.mailService.sendMail(email, "Verify Your Email", "userId", userId )
-      const newUser = new this.userModel({ userId, fullName, email, password });
+      await this.mailService.sendMail(email, "Verify Your Email", "OTP Code", otpCode )
+      const newUser = new this.userModel({ userId, fullName, email, password, otpCode, token });
       const data = await newUser.save();
-      return data;
+      return {data,token};
     }
 
 
@@ -65,7 +75,7 @@ export class AuthService {
     //const payload = { user };
     const User = await this.userModel.findOne({email: user.email});
 
-    const token = await this.jwtService.sign({email:User.email})
+    const token = await this.jwtService.sign({email:User.email, fullName:User.fullName, userId:User.userId})
     if (! token) {
       return "No JWT Token Attached"
     }
@@ -73,6 +83,24 @@ export class AuthService {
     
 
     // return this.jwtService.sign(payload);
+  }
+
+  async verifyUsers(userId:string, otpCode: string) {
+    if (!userId) {
+      throw new NotFoundException(
+        `The User with the id ${userId} no longer exists`
+      );
+    } else {
+      const updatedUser = await this.userModel.findOne({userId: userId})
+      if (updatedUser.otpCode !== otpCode){
+        return 'The Otp Code you Entered Is Incorrect'
+      } else{
+        updatedUser.otpCode = "";
+        await updatedUser.save()
+        return 'User Successfully Verified'
+      }
+
+    }
   }
 
 

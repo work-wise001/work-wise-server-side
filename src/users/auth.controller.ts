@@ -46,6 +46,15 @@ export class AuthController {
     res.redirect(`https://dynamic-unicorn-bea0db.netlify.app/?jwt=${jwt}`);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('verify')
+  verifyUsers(@Request() req, @Body("otpCode") otpCode: string,) {
+
+    const userId = req.user.userId;
+    const data = this.authService.verifyUsers(userId, otpCode);
+    return data;
+  }
+
 
 
   // @Post('login')

@@ -7,6 +7,7 @@ export const userSchema = new mongoose.Schema({
   userId: {type: String, required: true},
   verified: {type: Boolean, default: false },
   authStrategy: {type: String, default: "local"},
+  otpCode: {type: String},
   image: { url: String, format: String, public_id: String }
 },
 {
@@ -24,5 +25,7 @@ export interface User extends mongoose.Document {
   email: string;
   password: string;
   userId: string;
+  otpCode: string;
+  verified: boolean;
 
 }

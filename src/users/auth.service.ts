@@ -1,12 +1,19 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { randomBytes } from 'crypto';
 import { User } from "./users.model";
 import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from '../utils/mail.service';
-import { GenerateOTP } from "src/utils/generate.otp";
+import { GenerateOTP } from "../utils/generate.otp";
+
+interface UserWithResetToken {
+  _id: number;
+  resetToken: string;
+  resetTokenExpiration: number;
+}
 
 @Injectable()
 export class AuthService {
@@ -130,6 +137,66 @@ export class AuthService {
     return compare;
   };
 
+  async forgotPassword(email: string) {
+    const user = await this.userModel.findOne({email});
 
+    if (!user) {
+      // Handle case where user doesn't exist (optional: send informative message)
+      return;
+    }
 
+    const resetToken = randomBytes(32).toString('hex');
+    // const id = {_id: user.userId};
+    const id: any = user.userId;
+    const expiration = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+    await this.userModel.updateOne(id, { resetToken, resetTokenExpiration: expiration });
+
+    const resetLink = `http://localhost:3000/users/reset-password?token=${resetToken}&userId=${id}`; // Replace with your reset password URL
+
+    const textBody = `You have requested a password reset for your account. Please click the following link to reset your password within 24 hours: ${resetLink}`;
+    const htmlBody = `<h3>Password Reset Request</h3>
+                        <p>You have requested a password reset for your account.</p>
+                        <p>Please click the following link to reset your password within 24 hours:</p>
+                        <a href="${resetLink}">Reset Password</a>`;
+
+    await this.mailService.sendMail(email, 'Password Reset Request', textBody, htmlBody);
+  }
+
+  async resetPassword(token: string, userId: string, newPassword: string) {
+    // Find user by ID
+    const user = await this.userModel.findById(userId) as UserWithResetToken;
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Check if reset token is valid
+    if (user.resetToken !== token || user.resetTokenExpiration < Date.now()) {
+      throw new Error('Invalid or expired reset token');
+    }
+
+    // Hash the new password
+    const hashedPassword = await this.hashPassword(newPassword); // Replace with your password hashing logic
+
+    // Update user model with new password and remove reset token
+    await this.userModel.updateOne(
+      { _id: user._id },
+      { $unset: { resetToken: 1 }, password: hashedPassword }
+    );
+
+    return { message: 'Password reset successful' };
+  }
+
+  private async hashPassword(newPassword: string): Promise<string> {
+    const saltRounds = 10; // Adjust this value based on your security needs (higher = more secure, but slower)
+    try {
+      const salt = await bcrypt.genSalt(saltRounds);
+      const hash = await bcrypt.hash(newPassword, salt);
+      return hash;
+    } catch (error) {
+      console.error('Error hashing password:', error);
+      throw new Error('Failed to hash password');
+    }
+  }
+  
 }

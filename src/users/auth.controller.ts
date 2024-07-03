@@ -55,7 +55,32 @@ export class AuthController {
     return data;
   }
 
+  @Post('forgot-password')
+  async forgotPassword(@Body('email') email: string) {
+    try {
+      await this.authService.forgotPassword(email);
+      return { message: 'Password reset email sent (if user exists)' };
+    } catch (error) {
+      throw new HttpException('Error sending password reset email', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
+  @Post('reset-password')
+  async resetPassword(
+    @Body('token') token: string,
+    @Body('newPassword') newPassword: string,
+    @Body('userId') userId: string // Include userId parameter
+  ) {
+    try {
+      const response = await this.authService.resetPassword(token, userId, newPassword);
+      return (response); // Assuming authService returns a response object
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      return ({ 'message': 'Password reset failed' });
+    }
+  }
+  
+  
 
   // @Post('login')
   // async login(

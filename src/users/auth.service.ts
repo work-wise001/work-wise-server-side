@@ -54,6 +54,7 @@ export class AuthService {
    
   }
 
+  // for Oauth2 Authentication ==> used in googleStrategy for google authStrategy
   async findOrCreateUser(profile: any) {
     let user = await this.userModel.findOne({ userId: profile.userId });
 

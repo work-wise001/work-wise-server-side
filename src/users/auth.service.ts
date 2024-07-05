@@ -103,6 +103,7 @@ export class AuthService {
         return 'The Otp Code you Entered Is Incorrect'
       } else{
         updatedUser.otpCode = "";
+        updatedUser.verified = true;
         await updatedUser.save()
         return 'User Successfully Verified'
       }

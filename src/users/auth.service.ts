@@ -19,6 +19,7 @@ interface UserWithResetToken {
   userId: string;
   verified: string;
   authStrategy: string;
+  phoneNumber: string;
   otpCode: string;
   image: { url: string, format: string, public_id: string }
 }

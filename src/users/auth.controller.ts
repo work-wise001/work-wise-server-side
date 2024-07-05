@@ -59,7 +59,7 @@ export class AuthController {
   async forgotPassword(@Body('email') email: string) {
     try {
       await this.authService.forgotPassword(email);
-      return { message: 'Password reset email sent (if user exists)' };
+      return { message: 'Password reset email sent ' };
     } catch (error) {
       throw new HttpException('Error sending password reset email', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -67,9 +67,9 @@ export class AuthController {
 
   @Post('reset-password')
   async resetPassword(
-    @Body('token') token: string,
+    @Query('token') token: string,
     @Body('newPassword') newPassword: string,
-    @Body('userId') userId: string // Include userId parameter
+    @Query('userId') userId: string // Include userId parameter
   ) {
     try {
       const response = await this.authService.resetPassword(token, userId, newPassword);

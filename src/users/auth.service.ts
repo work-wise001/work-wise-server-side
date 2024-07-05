@@ -13,6 +13,14 @@ interface UserWithResetToken {
   _id: number;
   resetToken: string;
   resetTokenExpiration: number;
+  fullName: string;
+  email: string;
+  password: string;
+  userId: string;
+  verified: string;
+  authStrategy: string;
+  otpCode: string;
+  image: { url: string, format: string, public_id: string }
 }
 
 @Injectable()
@@ -143,31 +151,29 @@ export class AuthService {
     const user = await this.userModel.findOne({email});
 
     if (!user) {
-      // Handle case where user doesn't exist (optional: send informative message)
-      return;
+      throw new NotFoundException(
+        `The User with the email: ${email} does not exist`
+      );
+    } else {
+          const resetToken = randomBytes(32).toString('hex');
+          const id: any = user.userId;
+          console.log(id)
+           const expiration = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+           await this.userModel.updateOne({userId:id}, { resetToken, resetTokenExpiration: expiration });
+
+        const resetLink = `http://localhost:3000/users/reset-password?token=${resetToken}&userId=${id}`; // Replace with your reset password URL
+
+        const textBody = `You have requested a password reset for your account. Please click the following link to reset your password within 24 hours: ${resetLink}`;
+
+        await this.mailService.sendMail(email, "Password Reset Request", "Reset Link", textBody )
+
     }
 
-    const resetToken = randomBytes(32).toString('hex');
-    // const id = {_id: user.userId};
-    const id: any = user.userId;
-    const expiration = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-
-    await this.userModel.updateOne(id, { resetToken, resetTokenExpiration: expiration });
-
-    const resetLink = `http://localhost:3000/users/reset-password?token=${resetToken}&userId=${id}`; // Replace with your reset password URL
-
-    const textBody = `You have requested a password reset for your account. Please click the following link to reset your password within 24 hours: ${resetLink}`;
-    const htmlBody = `<h3>Password Reset Request</h3>
-                        <p>You have requested a password reset for your account.</p>
-                        <p>Please click the following link to reset your password within 24 hours:</p>
-                        <a href="${resetLink}">Reset Password</a>`;
-
-    await this.mailService.sendMail(email, 'Password Reset Request', textBody, htmlBody);
   }
 
   async resetPassword(token: string, userId: string, newPassword: string) {
     // Find user by ID
-    const user = await this.userModel.findById(userId) as UserWithResetToken;
+    const user = await this.userModel.findOne({userId}) as UserWithResetToken;
     if (!user) {
       throw new Error('User not found');
     }
@@ -182,7 +188,7 @@ export class AuthService {
 
     // Update user model with new password and remove reset token
     await this.userModel.updateOne(
-      { _id: user._id },
+      { userId: user.userId },
       { $unset: { resetToken: 1 }, password: hashedPassword }
     );
 

@@ -8,6 +8,8 @@ export const userSchema = new mongoose.Schema({
   verified: {type: Boolean, default: false },
   authStrategy: {type: String, default: "local"},
   otpCode: {type: String},
+  resetToken: {type: String},
+  resetTokenExpiration: {type: String},
   image: { url: String, format: String, public_id: String }
 },
 {

@@ -10,7 +10,7 @@ import { MailService } from '../utils/mail.service';
 import { GenerateOTP } from "../utils/generate.otp";
 
 interface UserWithResetToken {
-  _id: number;
+  id: number;
   resetToken: string;
   resetTokenExpiration: number;
 }
@@ -149,8 +149,10 @@ export class AuthService {
     // const id = {_id: user.userId};
     const id: any = user.userId;
     const expiration = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-
-    await this.userModel.updateOne(id, { resetToken, resetTokenExpiration: expiration });
+    user.resetToken = resetToken;
+    user.resetTokenExpiration = expiration;
+    user.save();
+    
 
     const resetLink = `http://localhost:3000/users/reset-password?token=${resetToken}&userId=${id}`; // Replace with your reset password URL
 
@@ -176,27 +178,14 @@ export class AuthService {
     }
 
     // Hash the new password
-    const hashedPassword = await this.hashPassword(newPassword); // Replace with your password hashing logic
+    const hashedPassword = await bcrypt.hash(newPassword); // Replace with your password hashing logic
 
     // Update user model with new password and remove reset token
     await this.userModel.updateOne(
-      { _id: user._id },
+      { _id: user.id },
       { $unset: { resetToken: 1 }, password: hashedPassword }
     );
 
     return { message: 'Password reset successful' };
   }
-
-  private async hashPassword(newPassword: string): Promise<string> {
-    const saltRounds = 10; // Adjust this value based on your security needs (higher = more secure, but slower)
-    try {
-      const salt = await bcrypt.genSalt(saltRounds);
-      const hash = await bcrypt.hash(newPassword, salt);
-      return hash;
-    } catch (error) {
-      console.error('Error hashing password:', error);
-      throw new Error('Failed to hash password');
-    }
-  }
-  
 }

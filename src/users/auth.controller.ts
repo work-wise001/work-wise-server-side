@@ -91,7 +91,7 @@ export class AuthController {
     try {
       // Retrieve the user information from the decoded JWT payload
       const user = req.user; // Assuming JwtAuthGuard decodes and attaches user data to request object
-      console.log(user); // Replace 'userId' with the actual claim name for user ID
+      //console.log(user); // Replace 'userId' with the actual claim name for user ID
   
       // Call your authService method with user information
       this.authService.changePassword(user.email, currentPassword, newPassword, confirmPassword);

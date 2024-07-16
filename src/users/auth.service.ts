@@ -207,5 +207,28 @@ export class AuthService {
       throw new Error('Failed to hash password');
     }
   }
+
+  async changePassword(email: string, currentPassword: string, newPassword: string, confirmPassword: string) {
+    const user = await this.userModel.findOne({ email }); // Find user by userdid
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password
+    ); console.log(currentPassword, user.password);
+  
+    if (!isPasswordValid) {
+      throw new Error('Incorrect current password');
+    }
+  
+    if (newPassword !== confirmPassword) {
+      throw new Error('New password and confirm password do not match');
+    }
+  
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+  
+    await user.save();
+  
+    return { message: 'Password changed successfully' };
+  }
   
 }

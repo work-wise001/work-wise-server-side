@@ -80,6 +80,27 @@ export class AuthController {
     }
   }
   
+  @UseGuards(JwtAuthGuard)
+  @Post('change-password')
+  async changePassword(
+    @Body('currentPassword') currentPassword: string,
+    @Body('newPassword') newPassword: string,
+    @Body('confirmPassword') confirmPassword: string,
+    @Req() req, // Inject the request object
+  ) {
+    try {
+      // Retrieve the user information from the decoded JWT payload
+      const user = req.user; // Assuming JwtAuthGuard decodes and attaches user data to request object
+      console.log(user); // Replace 'userId' with the actual claim name for user ID
+  
+      // Call your authService method with user information
+      this.authService.changePassword(user.email, currentPassword, newPassword, confirmPassword);
+  
+      return { message: 'Password changed successfully' };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
   
 
   // @Post('login')

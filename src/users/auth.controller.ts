@@ -107,8 +107,9 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  getUsers(@Query("userId") userId: string) {
+  getUsers(@Query("userId") userId: string, @Req() req) {
     const data = this.authService.getUsers(userId);
+    console.log({user: req.user})
     return data;
   }
 

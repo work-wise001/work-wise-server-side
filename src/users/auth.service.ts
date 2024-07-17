@@ -17,6 +17,7 @@ interface UserWithResetToken {
   email: string;
   password: string;
   userId: string;
+  country: string;
   verified: string;
   authStrategy: string;
   phoneNumber: string;
@@ -229,6 +230,29 @@ export class AuthService {
     await user.save();
   
     return { message: 'Password changed successfully' };
+  }
+
+  async updateUsers(query: any, name: string, phoneNumber: string, country: string) {
+    if (!query) {
+      throw new NotFoundException(
+        `The User with the id ${query} no longer exists`
+      );
+    } else {
+      const updatedUser:any = await this.findUser(query);
+
+      if (name) {
+        updatedUser.fullName = name;
+      }
+      if (phoneNumber) {
+        updatedUser.phoneNumber = phoneNumber;
+      }
+      if (country) {
+        updatedUser.country = country;
+      }
+
+    await updatedUser.save();
+    return updatedUser;
+    }
   }
   
 }

@@ -5,6 +5,7 @@ export const userSchema = new mongoose.Schema({
   email: {type: String, required: true},
   phoneNumber: {type: String},
   password: {type: String},
+  country: {type: String},
   userId: {type: String, required: true},
   verified: {type: Boolean, default: false },
   authStrategy: {type: String, default: "local"},

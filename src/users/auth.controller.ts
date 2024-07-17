@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, Query, HttpStatus, HttpException, Next, Req, Res, UseGuards, Request} from "@nestjs/common";
+import { Body, Controller, Post, Get, Patch, Query, HttpStatus, HttpException, Next, Req, Res, UseGuards, Request} from "@nestjs/common";
 import { Response,NextFunction } from 'express';
 import { AuthService } from "./auth.service";
 import { LocalAuthGuard } from "./local-auth-guard";
@@ -100,6 +100,25 @@ export class AuthController {
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch()
+  updateMe(
+    //@Query("userId") userId: any,
+    @Body("name") prodName: string,
+    @Body("phoneNumber") prodNumber: string,
+    @Body("country") prodCountry: string,
+    @Req() req
+  ) {
+    const user = req.user;
+    const data = this.authService.updateUsers(
+      user.userId,
+      prodName,
+      prodNumber,
+      prodCountry
+    );
+    return data;
   }
   
 

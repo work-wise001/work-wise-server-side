@@ -1,8 +1,44 @@
 {
   "openapi": "3.0.0",
+      "info": {
+        "title": "Work Wise API Server",
+        "description": "The Work Wise API description",
+        "version": "1.0.0",
+        "contact": {
+            "name": "The Work Wise API description",
+            "email": "workwise.org@gmail.com",
+            "url": "https://work-wise-server-side.onrender.com"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://work-wise-server-side.onrender.com"
+          },
+          {
+            "url": "http://localhost:3000"
+          }
+    ],
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+              "type": "http",
+              "scheme": "bearer"
+            },
+            "noauthAuth": {
+              "type": "http",
+              "scheme": "noauth"
+            }
+          }
+    },
+    "tags": [
+      {
+        "name": "Users"
+      }
+],
   "paths": {
     "/": {
       "get": {
+        "tags": [ "Users" ],
         "operationId": "AppController_root",
         "parameters": [],
         "responses": {
@@ -12,57 +48,26 @@
         }
       }
     },
-    "/products": {
-      "post": {
-        "operationId": "productsController_addProduct",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        }
-      },
-      "get": {
-        "operationId": "productsController_getProducts",
-        "parameters": [
-          {
-            "name": "productId",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      },
-      "patch": {
-        "operationId": "productsController_updateProduct",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      },
-      "delete": {
-        "operationId": "productsController_deleteProduct",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      }
-    },
+
     "/users": {
       "post": {
+        "tags": [ "Users" ],
         "operationId": "AuthController_addUsers",
         "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "fullName":"",
+                  "email":"",
+                  "password": ""
+                }
+              }
+            }
+          }
+        },   
         "responses": {
           "201": {
             "description": ""
@@ -99,8 +104,22 @@
     },
     "/users/login": {
       "post": {
+        "tags": [ "Users" ],
         "operationId": "AuthController_login",
         "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "email":"",
+                  "password": ""
+                }
+              }
+            }
+          }
+        },   
         "responses": {
           "201": {
             "description": ""
@@ -191,28 +210,5 @@
         }
       }
     }
-  },
-  "info": {
-    "title": "Work Wise API Server",
-    "description": "The Work Wise API description",
-    "version": "1.0",
-    "contact": {}
-  },
-  "tags": [
-    {
-      "name": "api",
-      "description": ""
-    }
-  ],
-  "servers": [
-    {
-      "url": "https://work-wise-server-side.onrender.com/"
-    },
-    {
-      "url": "http://localhost:3000"
-    }
-  ],
-  "components": {
-    "schemas": {}
   }
 }

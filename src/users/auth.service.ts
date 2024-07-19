@@ -81,7 +81,7 @@ export class AuthService {
       const token = await this.createToken(user);
       if (user && await this.isValidPassword(password,email)) {
         const { password , ...rest } = user
-        return { user, token };
+        return { message: "User Login Successful", user, token };
       }
       return null;
     }catch(e){
@@ -111,13 +111,13 @@ export class AuthService {
     } else {
       const updatedUser = await this.userModel.findOne({userId: userId})
       if (updatedUser.otpCode !== otpCode){
-        return 'The Otp Code you Entered Is Incorrect'
-      } else{
+        return {message: 'The Otp Code you Entered Is Incorrect .....'}
+      } 
         updatedUser.otpCode = "";
         updatedUser.verified = true;
         await updatedUser.save()
-        return 'User Successfully Verified'
-      }
+        return {message: 'Email Verification Successful'}
+      
 
     }
   }

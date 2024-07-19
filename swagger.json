@@ -172,6 +172,11 @@
             }
           }
         }, 
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "201": {
             "description": ""

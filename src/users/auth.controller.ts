@@ -51,7 +51,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('verify')
-  verifyUsers(@Request() req, @Body("otpCode") otpCode: string,) {
+  verifyUsers(@Request() req, @Body("otpCode") otpCode: string) {
 
     const userId = req.user.userId;
     const data = this.authService.verifyUsers(userId, otpCode);

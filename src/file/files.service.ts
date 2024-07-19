@@ -1,8 +1,4 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-// import { InjectModel } from "@nestjs/mongoose";
-// import { Model } from "mongoose";
-// import { Product } from "./products.model";
-// import { v4 as uuidv4 } from "uuid";
 import fs from 'fs';
 import { promisify } from 'util';
 import cloudinary from '../utils/cloudinary.config';

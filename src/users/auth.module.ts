@@ -12,6 +12,7 @@ import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from "./jwt.strategy";
 import { MailService } from '../utils/mail.service';
 import { GenerateOTP } from "../utils/generate.otp";
+import { FileService } from "../file/files.service";
 
 @Module({
     imports: [JwtModule.registerAsync({       
@@ -29,6 +30,7 @@ import { GenerateOTP } from "../utils/generate.otp";
     controllers: [AuthController],
     providers: [AuthService, 
       MailService,
+      FileService,
       GenerateOTP,
       GoogleStrategy, 
       LocalStrategy,

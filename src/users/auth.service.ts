@@ -232,22 +232,28 @@ export class AuthService {
     return { message: 'Password changed successfully' };
   }
 
-  async updateUsers(query: any, name: string, phoneNumber: string, country: string) {
+  async updateMe(query: any, data: any, 
+    // name: string, phoneNumber: string, country: string
+  ) {
     if (!query) {
       throw new NotFoundException(
         `The User with the id ${query} no longer exists`
       );
     } else {
       const updatedUser:any = await this.findUser(query);
+      console.log(data)
 
-      if (name) {
-        updatedUser.fullName = name;
+      if (data.name) {
+        updatedUser.fullName = data.name;
       }
-      if (phoneNumber) {
-        updatedUser.phoneNumber = phoneNumber;
+      if (data.phoneNumber) {
+        updatedUser.phoneNumber = data.phoneNumber;
       }
-      if (country) {
-        updatedUser.country = country;
+      if (data.country) {
+        updatedUser.country = data.country;
+      }
+      if (data.photo) {
+        updatedUser.photo = data.photo;
       }
 
     await updatedUser.save();

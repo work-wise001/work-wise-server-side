@@ -1,14 +1,17 @@
-import { Body, Controller, Post, Get, Patch, Query, HttpStatus, HttpException, Next, Req, Res, UseGuards, Request} from "@nestjs/common";
+import { Body, Controller, Post, Get, Patch, Query, HttpStatus, HttpException, Next, Req, Res, UseGuards, Request, UploadedFile, UseInterceptors} from "@nestjs/common";
 import { Response,NextFunction } from 'express';
 import { AuthService } from "./auth.service";
+import { FileService } from "../file/files.service";
 import { LocalAuthGuard } from "./local-auth-guard";
 import { JwtAuthGuard } from "./jwt-auth-guard";
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from '../middlewares/upload.config';
 
 
 @Controller("users")
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService, private readonly fileService: FileService) {}
 
   @Post()
   addUsers(
@@ -104,21 +107,89 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Patch()
-  updateMe(
+  @UseInterceptors(FileInterceptor('file', multerOptions))
+  async updateMe(
     //@Query("userId") userId: any,
-    @Body("name") prodName: string,
-    @Body("phoneNumber") prodNumber: string,
-    @Body("country") prodCountry: string,
-    @Req() req
+    @Body("name") name: string,
+    @Body("phoneNumber") phoneNumber: string,
+    @Body("country") country: string,
+    @UploadedFile() file: Express.Multer.File,
+    //@Body("photo") photo: object,
+    @Body() body: any,
+    @Req() req,
+
   ) {
-    const user = req.user;
-    const data = this.authService.updateUsers(
-      user.userId,
-      prodName,
-      prodNumber,
-      prodCountry
-    );
-    return data;
+    console.log(file)
+    const userId = req.user.userId;
+    try{
+      if (req.file && req.file.fieldname === 'photo') {
+        let previousPhotoUrl = '';
+        if (req.user?.photo) {
+          previousPhotoUrl = req.user.photo.public_id;
+          if (previousPhotoUrl) {
+            // delete previous file on cloudinary
+            await this.fileService.deleteFile(previousPhotoUrl);
+            const image = await this.fileService.uploadSinglePhoto(req.file);
+        
+          const user = await this.authService.updateMe(userId, {
+            name,
+            phoneNumber,
+            country,
+            photo:{
+              url: image.secure_url,
+              format: image.format,
+              public_id: image.public_id
+          }
+        });
+          await this.fileService.unlinkFile(req.file?.path)
+          return (`'user updated successfully', ${ user }`);
+          }
+          
+          const image = await this.fileService.uploadSinglePhoto(req.file);
+        
+          const user = await this.authService.updateMe(userId, {
+            name,
+            phoneNumber,
+            country,
+            photo:{
+              url: image.secure_url,
+              format: image.format,
+              public_id: image.public_id
+          }});
+          await this.fileService.unlinkFile(req.file?.path)
+          return (`user updated successfully, ${ user }`);
+          
+        }
+  
+        const image = await this.fileService.uploadSinglePhoto(req.file);
+        
+        const user = await this.authService.updateMe(userId, {
+          name,
+          phoneNumber,
+          country,
+          photo:{
+            url: image.secure_url,
+            format: image.format,
+            public_id: image.public_id
+        }});
+        
+        //return res.status(200).json(httpResponse('user updated successfully', { user }));
+        return (`user updated successfully, ${ user }`)
+  
+      } else {
+        const data = this.authService.updateMe(
+          userId,
+          //{body}
+        { name,
+          phoneNumber,
+          country}
+        );
+        return data;
+      }
+    } catch(error){
+      console.log(error)
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
   
 
@@ -152,28 +223,6 @@ export class AuthController {
     console.log({user: req.user})
     return data;
   }
-
-//   @Patch()
-//   updateProduct(
-//     @Query("productId") prodId: any,
-//     @Body("title") prodTitle: string,
-//     @Body("description") prodDesc: string,
-//     @Body("price") prodPrice: number
-//   ) {
-//     const data = this.productService.updateProduct(
-//       prodId,
-//       prodTitle,
-//       prodDesc,
-//       prodPrice
-//     );
-//     return data;
-//   }
-
-//   @Delete()
-//   deleteProduct(@Query("productId") prodId: any) {
-//     const data = this.productService.deleteProduct(prodId);
-//     return data;
-//   }
 
 }
 

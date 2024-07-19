@@ -52,6 +52,7 @@
     "/users": {
       "post": {
         "tags": [ "Users" ],
+        "summary": "User Signup",
         "operationId": "AuthController_addUsers",
         "parameters": [],
         "requestBody": {
@@ -105,6 +106,7 @@
     "/users/login": {
       "post": {
         "tags": [ "Users" ],
+        "summary": "User Login",
         "operationId": "AuthController_login",
         "parameters": [],
         "requestBody": {
@@ -129,6 +131,7 @@
     },
     "/users/google": {
       "get": {
+        "tags": [ "Users" ],
         "operationId": "AuthController_googleAuth",
         "parameters": [],
         "responses": {
@@ -140,6 +143,8 @@
     },
     "/users/google/callback": {
       "get": {
+        "tags": [ "Users" ],
+        "summary": "Google Signup",
         "operationId": "AuthController_googleAuthRedirect",
         "parameters": [],
         "responses": {
@@ -151,8 +156,22 @@
     },
     "/users/verify": {
       "post": {
+        "tags": [ "Users" ],
+        "summary": "User Otp Verification",
         "operationId": "AuthController_verifyUsers",
         "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "otpCode":""
+                }
+              }
+            }
+          }
+        }, 
         "responses": {
           "201": {
             "description": ""
@@ -162,6 +181,7 @@
     },
     "/users/forgot-password": {
       "post": {
+        "tags": [ "Users" ],
         "operationId": "AuthController_forgotPassword",
         "parameters": [],
         "responses": {
@@ -173,6 +193,7 @@
     },
     "/users/reset-password": {
       "post": {
+        "tags": [ "Users" ],
         "operationId": "AuthController_resetPassword",
         "parameters": [
           {
@@ -201,6 +222,7 @@
     },
     "/users/change-password": {
       "post": {
+        "tags": [ "Users" ],
         "operationId": "AuthController_changePassword",
         "parameters": [],
         "responses": {

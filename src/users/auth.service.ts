@@ -78,12 +78,15 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<any> {
     try{
       const user = await this.userModel.findOne({email});
+      if (!user){
+        return {message: "Incorrect Email"}
+      }
       const token = await this.createToken(user);
       if (user && await this.isValidPassword(password,email)) {
         const { password , ...rest } = user
         return { message: "User Login Successful", user, token };
       }
-      return null;
+      return {message: "Incorrect Password"};
     }catch(e){
       return e
     }

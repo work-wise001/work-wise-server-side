@@ -9,6 +9,7 @@ import { readFileSync } from 'fs';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.enableCors(); // This will allow all origins by default
 
 //   // swagger set up
 //   const config = new DocumentBuilder()

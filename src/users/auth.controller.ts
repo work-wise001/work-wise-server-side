@@ -109,87 +109,120 @@ export class AuthController {
   @Patch()
   @UseInterceptors(FileInterceptor('file', multerOptions))
   async updateMe(
-    //@Query("userId") userId: any,
     @Body("name") name: string,
     @Body("phoneNumber") phoneNumber: string,
     @Body("country") country: string,
     @UploadedFile() file: Express.Multer.File,
-    //@Body("photo") photo: object,
-    @Body() body: any,
     @Req() req,
 
   ) {
     console.log(file)
     const userId = req.user.userId;
-    try{
-      if (req.file && req.file.fieldname === 'photo') {
-        let previousPhotoUrl = '';
-        if (req.user?.photo) {
-          previousPhotoUrl = req.user.photo.public_id;
-          if (previousPhotoUrl) {
-            // delete previous file on cloudinary
-            await this.fileService.deleteFile(previousPhotoUrl);
-            const image = await this.fileService.uploadSinglePhoto(req.file);
-        
-          const user = await this.authService.updateMe(userId, {
-            name,
-            phoneNumber,
-            country,
-            photo:{
-              url: image.secure_url,
-              format: image.format,
-              public_id: image.public_id
-          }
-        });
-          await this.fileService.unlinkFile(req.file?.path)
-          return (`'user updated successfully', ${ user }`);
-          }
-          
-          const image = await this.fileService.uploadSinglePhoto(req.file);
-        
-          const user = await this.authService.updateMe(userId, {
-            name,
-            phoneNumber,
-            country,
-            photo:{
-              url: image.secure_url,
-              format: image.format,
-              public_id: image.public_id
-          }});
-          await this.fileService.unlinkFile(req.file?.path)
-          return (`user updated successfully, ${ user }`);
-          
+    let user;
+    try {
+      if (file) {
+        if (req.user?.photo?.public_id) {
+          await this.fileService.deleteFile(req.user.photo.public_id);
         }
-  
-        const image = await this.fileService.uploadSinglePhoto(req.file);
-        
-        const user = await this.authService.updateMe(userId, {
+
+        const image = await this.fileService.uploadSinglePhoto(file);
+        console.log({image})
+
+        user = await this.authService.updateMe(userId, {
           name,
           phoneNumber,
           country,
-          photo:{
+          photo: {
             url: image.secure_url,
             format: image.format,
-            public_id: image.public_id
-        }});
-        
-        //return res.status(200).json(httpResponse('user updated successfully', { user }));
-        return (`user updated successfully, ${ user }`)
-  
+            public_id: image.public_id,
+          },
+        });
+
+        await this.fileService.unlinkFile(file.path);
       } else {
-        const data = this.authService.updateMe(
-          userId,
-          //{body}
-        { name,
+        user = await this.authService.updateMe(userId, {
+          name,
           phoneNumber,
-          country}
-        );
-        return data;
+          country,
+        });
       }
-    } catch(error){
-      console.log(error)
+
+      return { message: 'user updated successfully', user };
+
+    } catch (error) {
+      console.error(error);
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
+    // try{
+    //   if (req.file && req.file.fieldname === 'photo') {
+    //     let previousPhotoUrl = '';
+    //     if (req.user?.photo) {
+    //       previousPhotoUrl = req.user.photo.public_id;
+    //       if (previousPhotoUrl) {
+    //         // delete previous file on cloudinary
+    //         await this.fileService.deleteFile(previousPhotoUrl);
+    //         const image = await this.fileService.uploadSinglePhoto(req.file);
+        
+    //       const user = await this.authService.updateMe(userId, {
+    //         name,
+    //         phoneNumber,
+    //         country,
+    //         photo:{
+    //           url: image.secure_url,
+    //           format: image.format,
+    //           public_id: image.public_id
+    //       }
+    //     });
+    //       await this.fileService.unlinkFile(req.file?.path)
+    //       return (`'user updated successfully', ${ user }`);
+    //       }
+          
+    //       const image = await this.fileService.uploadSinglePhoto(req.file);
+        
+    //       const user = await this.authService.updateMe(userId, {
+    //         name,
+    //         phoneNumber,
+    //         country,
+    //         photo:{
+    //           url: image.secure_url,
+    //           format: image.format,
+    //           public_id: image.public_id
+    //       }});
+    //       await this.fileService.unlinkFile(req.file?.path)
+    //       return (`user updated successfully, ${ user }`);
+          
+    //     }
+  
+    //     const image = await this.fileService.uploadSinglePhoto(req.file);
+        
+    //     const user = await this.authService.updateMe(userId, {
+    //       name,
+    //       phoneNumber,
+    //       country,
+    //       photo:{
+    //         url: image.secure_url,
+    //         format: image.format,
+    //         public_id: image.public_id
+    //     }});
+        
+    //     //return res.status(200).json(httpResponse('user updated successfully', { user }));
+    //     return (`user updated successfully, ${ user }`)
+  
+    //   } else {
+    //     const data = this.authService.updateMe(
+    //       userId,
+    //       //{body}
+    //     { name,
+    //       phoneNumber,
+    //       country}
+    //     );
+    //     return data;
+    //   }
+    // } catch(error){
+    //   console.log(error)
+    //   throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    // }
   }
   
 

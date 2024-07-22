@@ -96,7 +96,7 @@ export class AuthService {
     //const payload = { user };
     const User = await this.userModel.findOne({email: user.email});
 
-    const token = await this.jwtService.sign({email:User.email, fullName:User.fullName, userId:User.userId})
+    const token = await this.jwtService.sign({email:User.email, fullName:User.fullName, userId:User.userId, photo: User.photo})
     if (! token) {
       return "No JWT Token Attached"
     }

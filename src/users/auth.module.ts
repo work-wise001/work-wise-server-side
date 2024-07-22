@@ -11,12 +11,13 @@ import { GoogleStrategy } from './google.strategy';
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from "./jwt.strategy";
 import { MailService } from '../utils/mail.service';
-import { GenerateOTP } from "../utils/generate.otp";
+import { GenerateOTP } from "../utils/generate.otp"; 
 import { FileService } from "../file/files.service";
+import { FileModule } from "../file/files.module"
 
 @Module({
     imports: [JwtModule.registerAsync({       
-      imports: [ConfigModule],
+      imports: [ConfigModule, FileModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET'),
@@ -24,13 +25,13 @@ import { FileService } from "../file/files.service";
       }),
       }),
       MongooseModule.forFeature([{ name: 'User', schema: userSchema }]),
-      PassportModule
+      PassportModule,
       //PassportModule.register({ defaultStrategy: 'google' })
     ],
     controllers: [AuthController],
     providers: [AuthService, 
-      MailService,
       FileService,
+      MailService,
       GenerateOTP,
       GoogleStrategy, 
       LocalStrategy,

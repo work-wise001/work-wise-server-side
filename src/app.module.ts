@@ -5,10 +5,13 @@ import { ConfigModule } from '@nestjs/config'; // for env
 ///////////////------ Modules Used In Project -----////////////
 import { productModule } from "./products/products.module";
 import { authModule } from "./users/auth.module";
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 //import { AuthMiddleware } from './users/auth.middleware';
 
 @Module({
-  imports: [productModule, authModule, ConfigModule.forRoot({isGlobal: true, envFilePath: '.env',}), MongooseModule.forRoot(process.env.MONGODB_URL)],
+  imports: [productModule, authModule, ConfigModule.forRoot({isGlobal: true, envFilePath: '.env',}), 
+    //CloudinaryModule, 
+    MongooseModule.forRoot(process.env.MONGODB_URL)],
   controllers: [AppController],
   providers: [],
 })

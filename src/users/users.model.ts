@@ -12,7 +12,7 @@ export const userSchema = new mongoose.Schema({
   otpCode: {type: String},
   resetToken: {type: String},
   resetTokenExpiration: {type: String},
-  image: { url: String, format: String, public_id: String }
+  photo: { url: String, format: String, public_id: String }
 },
 {
   toJSON: {

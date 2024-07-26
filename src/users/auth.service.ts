@@ -38,6 +38,9 @@ export class AuthService {
   ) {}
 
   async createUsers(fullName: string, email: string, password: string ) {
+    if (!fullName || !email || !password) {
+      return {"message":"All Fields Required, No Empty Fields"}
+    }
     const userId = uuidv4();
     email = email.toLowerCase();
     const hashedPassword = await bcrypt.hash(password, 10)

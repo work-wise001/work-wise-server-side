@@ -13,6 +13,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(email: string, password: string): Promise<any> {
+    if (!email || !password) {
+      return {"message":"All Fields Required, No Empty Fields"}
+    }
       const user = await this.authService.validateUser(email.toLowerCase(), password);
       if (!user) {
         throw new UnauthorizedException();

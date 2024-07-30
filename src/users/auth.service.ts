@@ -50,7 +50,6 @@ export class AuthService {
     if (! token) {
       return "No JWT Token Attached"
     }
-    console.log({otpCode})
     const user = await this.userModel.findOne({email: email})
     if (user) {
       return "User Already Registered"

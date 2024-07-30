@@ -120,8 +120,6 @@ export class AuthService {
         updatedUser.verified = true;
         await updatedUser.save()
         return {message: 'Email Verification Successful'}
-      
-
     }
   }
 

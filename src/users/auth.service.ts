@@ -101,8 +101,6 @@ export class AuthService {
     }
     return token
     
-
-    // return this.jwtService.sign(payload);
   }
 
   async verifyUsers(userId:string, otpCode: string) {

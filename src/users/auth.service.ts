@@ -46,8 +46,6 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10)
     password = hashedPassword;
     const otpCode = `${this.generateOtp.OTP(6)}`
-    // const newUser = { email, fullName, userId };
-    // console.log({newUser})
     const token = await this.jwtService.sign({email, fullName, userId})
     if (! token) {
       return "No JWT Token Attached"

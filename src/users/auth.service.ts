@@ -93,7 +93,6 @@ export class AuthService {
   }
 
   async createToken(user: any) {
-    //const payload = { user };
     const User = await this.userModel.findOne({email: user.email});
 
     const token = await this.jwtService.sign({email:User.email, fullName:User.fullName, userId:User.userId, photo: User.photo})

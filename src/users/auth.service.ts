@@ -154,9 +154,10 @@ export class AuthService {
     const user = await this.userModel.findOne({email});
 
     if (!user) {
-      throw new NotFoundException(
-        `The User with the email: ${email} does not exist`
-      );
+      // throw new NotFoundException(
+      //   `The User with the email: ${email} does not exist`
+      // );
+      return {message: `The User with the email: ${email} does not exist`}
     } else {
           const resetToken = randomBytes(32).toString('hex');
           const id: any = user.userId;
@@ -169,6 +170,8 @@ export class AuthService {
         const textBody = `You have requested a password reset for your account. Please click the following link to reset your password within 24 hours: ${resetLink}`;
 
         await this.mailService.sendMail(email, "Password Reset Request", "Reset Link", textBody )
+
+        return { message: 'Password reset email sent ' };
 
     }
 

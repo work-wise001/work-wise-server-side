@@ -61,8 +61,9 @@ export class AuthController {
   @Post('forgot-password')
   async forgotPassword(@Body('email') email: string) {
     try {
-      await this.authService.forgotPassword(email);
-      return { message: 'Password reset email sent ' };
+      const data = await this.authService.forgotPassword(email);
+      return data
+
     } catch (error) {
       throw new HttpException('Error sending password reset email', HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -189,6 +189,18 @@
         "tags": [ "Users" ],
         "operationId": "AuthController_forgotPassword",
         "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "email":""
+                }
+              }
+            }
+          }
+        },   
         "responses": {
           "201": {
             "description": ""

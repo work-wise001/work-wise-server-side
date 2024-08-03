@@ -42,21 +42,24 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req, @Res() res) {
+    try{
     // Handles the Google OAuth2 callback
     const jwt: string = await this.authService.createToken(req.user);
     console.log(req.user)
     // Now you could redirect the user to the frontend with the token
     res.redirect(`https://dynamic-unicorn-bea0db.netlify.app/html/home?jwt=${jwt}`);
+    }catch(e){
+      console.log(e)
+    }
+
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('verify')
-  verifyUsers(@Request() req, @Res() res, @Body("otpCode") otpCode: string) {
+  async verifyUsers(@Request() req, @Body("otpCode") otpCode: string) {
 
     const userId = req.user.userId;
-    const data = this.authService.verifyUsers(userId, otpCode);
-    // res.redirect(`https://dynamic-unicorn-bea0db.netlify.app/html/e_verify/?userId=${req.user.userId}`)
-
+    const data = await this.authService.verifyUsers(userId, otpCode);
     return data;
   }
 

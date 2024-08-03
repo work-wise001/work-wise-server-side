@@ -46,15 +46,17 @@ export class AuthController {
     const jwt: string = await this.authService.createToken(req.user);
     console.log(req.user)
     // Now you could redirect the user to the frontend with the token
-    res.redirect(`https://dynamic-unicorn-bea0db.netlify.app/?jwt=${jwt}`);
+    res.redirect(`https://dynamic-unicorn-bea0db.netlify.app/html/home?jwt=${jwt}`);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('verify')
-  verifyUsers(@Request() req, @Body("otpCode") otpCode: string) {
+  verifyUsers(@Request() req, @Res() res, @Body("otpCode") otpCode: string) {
 
     const userId = req.user.userId;
     const data = this.authService.verifyUsers(userId, otpCode);
+    // res.redirect(`https://dynamic-unicorn-bea0db.netlify.app/html/e_verify/?userId=${req.user.userId}`)
+
     return data;
   }
 

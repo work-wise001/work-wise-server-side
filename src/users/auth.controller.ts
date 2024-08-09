@@ -44,7 +44,7 @@ export class AuthController {
   async googleAuthRedirect(@Req() req, @Res() res) {
     try{
     // Handles the Google OAuth2 callback
-    console.log({UserController: req.user})
+    
     if (typeof req.user !== 'object') {
       res.redirect('https://dynamic-unicorn-bea0db.netlify.app/html/login')
       return "Unable To SignUp With Google, User Already Exist In Local Strategy"

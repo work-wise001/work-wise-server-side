@@ -66,13 +66,18 @@ export class AuthService {
 
   // for Oauth2 Authentication ==> used in googleStrategy for google authStrategy
   async findOrCreateUser(profile: any) {
-    let user = await this.userModel.findOne({ userId: profile.userId });
-
+    let user:any = await this.userModel.findOne({ email: profile.email });
+    console.log({user})
     if (!user) {
       user = await new this.userModel(profile).save(); // Create user if they don't exist
     }
 
+    if (user.authStrategy == "local") {
+      return "Unable To SignUp With Google, User Already Exist In Local Strategy"
+    }
+
     return user; // Return user whether it existed or was just created
+
   }
 
   async validateUser(email: string, password: string): Promise<any> {

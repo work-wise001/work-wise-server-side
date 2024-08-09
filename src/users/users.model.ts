@@ -32,5 +32,6 @@ export interface User extends mongoose.Document {
   otpCode: string;
   verified: boolean;
   photo: object;
+  authStrategy: string;
 
 }

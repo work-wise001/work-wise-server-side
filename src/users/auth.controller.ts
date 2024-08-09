@@ -50,10 +50,7 @@ export class AuthController {
       return "Unable To SignUp With Google, User Already Exist In Local Strategy"
     }
     const jwt: string = await this.authService.createToken(req.user);
-    // if (!jwt) {
-    //   return "Unable To SignUp With Google, User Already Exist In Local Strategy"
-    // }
-    // Now you could redirect the user to the frontend with the token
+
     res.redirect(`https://dynamic-unicorn-bea0db.netlify.app/html/home?jwt=${jwt}`);
     }catch(e){
       console.log(e)

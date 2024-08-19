@@ -242,6 +242,21 @@
         "tags": [ "Users" ],
         "operationId": "AuthController_changePassword",
         "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "currentPassword":"",
+                  "newPassword":"",
+                  "confirmPassword":"",
+                  "password": ""
+                }
+              }
+            }
+          }
+        }, 
         "responses": {
           "201": {
             "description": ""

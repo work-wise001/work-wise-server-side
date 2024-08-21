@@ -250,7 +250,7 @@ export class AuthService {
       );
     } else {
       const updatedUser:any = await this.findUser(query);
-      console.log(data)
+      //console.log(data)
 
       if (data.name) {
         updatedUser.fullName = data.name;

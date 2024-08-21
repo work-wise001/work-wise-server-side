@@ -126,7 +126,7 @@ export class AuthController {
     @Req() req,
 
   ) {
-    console.log(file)
+    //console.log(file)
     const userId = req.user.userId;
     let user;
     try {
@@ -136,7 +136,7 @@ export class AuthController {
         }
 
         const image = await this.fileService.uploadSinglePhoto(file);
-        console.log({image})
+        //console.log({image})
 
         user = await this.authService.updateMe(userId, {
           name,
